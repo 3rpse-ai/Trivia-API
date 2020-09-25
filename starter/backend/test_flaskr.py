@@ -64,6 +64,36 @@ class TriviaTestCase(unittest.TestCase):
         self.assertIsNotNone(data['questions'])
         self.assertIsNotNone(data['total_questions'])
 
+    def test_delete_question(self):
+        question = Question(question='Test Question',answer='Right Answer',category=1,difficulty=1)
+        question.insert()
+
+        res = self.client().delete('/questions/{}'.format(question.id))
+        data = json.loads(res.data)
+
+        question = Question.query.get(question.id)
+
+        self.assertEqual(res.status_code,200)
+        self.assertEqual(data['success'],True)
+        self.assertEqual(question, None)
+
+    def test_delete_question_out_of_bounds(self):
+        res = self.client().delete('/questions/20000')
+        data = json.loads(res.data)
+
+        self.assertEqual(res.status_code, 404)
+        self.assertEqual(data['success'],False)
+        self.assertEqual(data['message'],'Not Found')
+    
+    def test_delete_question_bad_request(self):
+        res = self.client().delete('/questions/a')
+        data = json.loads(res.data)
+
+        self.assertEqual(res.status_code, 400)
+        self.assertEqual(data['success'],False)
+        self.assertEqual(data['message'],'Question Id needs to be an Integer')
+
+
 
 # Make the tests conveniently executable
 if __name__ == "__main__":

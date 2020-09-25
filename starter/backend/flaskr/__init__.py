@@ -94,6 +94,22 @@ def create_app(test_config=None):
   This removal will persist in the database and when you refresh the page. 
   '''
 
+  @app.route('/questions/<question_id>', methods=['DELETE'])
+  def delete_question(question_id):
+    try:
+      question_id = int(question_id)
+    except:
+      abort(400, {'message':'Question Id needs to be an Integer'})
+    
+    try:
+      question = Question.query.get(question_id)
+      question.delete()
+    except:
+      abort(404)
+    return jsonify({'success' : True})
+    
+    
+  
   '''
   @TODO: 
   Create an endpoint to POST a new question, 
@@ -104,6 +120,7 @@ def create_app(test_config=None):
   the form will clear and the question will appear at the end of the last page
   of the questions list in the "List" tab.  
   '''
+
 
   '''
   @TODO: 
@@ -150,6 +167,14 @@ def create_app(test_config=None):
       'error' : 404,
       'message' : 'Not Found'
     }), 404
+
+  @app.errorhandler(400)
+  def bad_request(error):
+    return jsonify({
+      'success' : False,
+      'error' : 400,
+      'message' : error.description['message']
+    }), 400
   
   return app
 
