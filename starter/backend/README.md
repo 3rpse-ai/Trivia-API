@@ -63,13 +63,17 @@ GET '/categories'
 - Request Arguments: None
 - Returns: An object with a single key, categories, that contains a object of id: category_string key:value pairs. 
 ```
-{'1' : "Science",
-'2' : "Art",
-'3' : "Geography",
-'4' : "History",
-'5' : "Entertainment",
-'6' : "Sports"}
+{
+    '1' : "Science",
+    '2' : "Art",
+    '3' : "Geography",
+    '4' : "History",
+    '5' : "Entertainment",
+    '6' : "Sports"
+}
 ```
+
+
 
 GET '/questions'
 - Fetches all questions, paginated, max 10 questions per page. Takes current page number as argument.
@@ -107,6 +111,8 @@ GET '/questions'
 }
 ```
 
+
+
 POST '/questions'
 - Fetches all questions fullfilling a search term, paginated, max 10 questions per page. Takes current page number as argument. The search is run on the question string, ignores case and is independent of where it is found in the string.
 - Request Arguments: page(int)
@@ -141,6 +147,8 @@ POST '/questions'
   "total_questions": 1
 }
 ```
+
+
 
 DELETE '/questions/<question_id>'
 - Deletes a question, as defined by a question_id
@@ -178,6 +186,8 @@ POST '/questions/create'
 }
 ```
 
+
+
 GET '/categories/<category_id>/questions'
 - Fetches all questions, paginated, max 10 questions per page. Takes category_id & current page number as argument.
 - Request Arguments: category_id(str), page(int)
@@ -214,6 +224,8 @@ GET '/categories/<category_id>/questions'
 }
 ```
 
+
+
 POST 'quizzes'
 - Fetches a random question of either all question or a given category. In selecting a random question, previously displayed questions can be excluded by providing question ids as an array. If no particular category shall be chosen, provide '0' for category id.
 - Request Arguments: None
@@ -227,7 +239,6 @@ POST 'quizzes'
     }
 }
 ```
-
 - Returns: A random question as specified in the request body. In case no more questions are available for display given by the previous_questions array, a 422 is thrown.
 ```
 {
