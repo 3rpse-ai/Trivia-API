@@ -58,7 +58,7 @@ The Trivia-API Backend provides a couple of Endpoints for providing the full gam
 
 
 
-GET '/categories'
+GET `/categories`
 - Fetches a dictionary of categories in which the keys are the ids and the value is the corresponding string of the category
 - Request Arguments: None
 - Returns: An object with a single key, categories, that contains a object of id: category_string key:value pairs. 
@@ -75,7 +75,7 @@ GET '/categories'
 
 
 
-GET '/questions'
+GET `/questions`
 - Fetches all questions, paginated, max 10 questions per page. Takes current page number as argument.
 - Request Arguments: page(int)
 - Returns: An object including all categories, the current category (null in this case), all questions, the success status, and the number of total_questions. Categories are provided with the id as key and string as value. Questions are provided as a list of dictionaries each providing values for answer,category,difficulty,id, and question.
@@ -113,7 +113,7 @@ GET '/questions'
 
 
 
-POST '/questions'
+POST `/questions`
 - Fetches all questions fullfilling a search term, paginated, max 10 questions per page. Takes current page number as argument. The search is run on the question string, ignores case and is independent of where it is found in the string.
 - Request Arguments: page(int)
 - Request Body:
@@ -150,7 +150,7 @@ POST '/questions'
 
 
 
-DELETE '/questions/<question_id>'
+DELETE `/questions/<question_id>`
 - Deletes a question, as defined by a question_id
 - Request Arguments: question_id(int)
 - Returns: The success of the operation, provided as value of a dict.
@@ -160,7 +160,7 @@ DELETE '/questions/<question_id>'
 }
 ```
 
-POST '/questions/create'
+POST `/questions/create`
 - Creates a new question as provided in the json request body. Every provided category id must be of type string & point to an existing category. The difficulty must be an integer between 1 to 5. The question must have at least 10, and the answer at least one character(s).
 - Request Arguments: None
 - Request Body:
@@ -188,7 +188,7 @@ POST '/questions/create'
 
 
 
-GET '/categories/<category_id>/questions'
+GET `/categories/<category_id>/questions`
 - Fetches all questions, paginated, max 10 questions per page. Takes category_id & current page number as argument.
 - Request Arguments: category_id(str), page(int)
 - Returns: A dict including all categories, the current category (as specified in the argument), all related questions, the success status, and the number of total_questions. Categories are provided with the id as key and string as value. Questions are provided as a list of dictionaries each providing values for answer,category,difficulty,id, and question.
@@ -226,7 +226,7 @@ GET '/categories/<category_id>/questions'
 
 
 
-POST 'quizzes'
+POST `quizzes`
 - Fetches a random question of either all question or a given category. In selecting a random question, previously displayed questions can be excluded by providing question ids as an array. If no particular category shall be chosen, provide '0' for category id.
 - Request Arguments: None
 - Request Body:
