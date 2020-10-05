@@ -198,14 +198,8 @@ def create_app(test_config=None):
   @app.route('/categories/<category_id>/questions', methods=['GET'])
   def get_questions_by_category(category_id):
 
-    if request.method == 'GET':
-      selection = Question.query.filter_by(category=category_id).all()
-      
-    if request.method == 'POST':
-      content = request.json
-      search_term = content['searchTerm']
-      print(format(search_term))
-      selection = Question.query.filter(Question.question.ilike('%' + search_term + '%')).all()
+    selection = Question.query.filter_by(category=category_id).all()
+     
     
     questions = paginate_questions(request, selection)
     categories = Category.query.all()

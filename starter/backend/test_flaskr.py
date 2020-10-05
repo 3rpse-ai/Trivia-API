@@ -165,15 +165,13 @@ class TriviaTestCase(unittest.TestCase):
         self.assertEqual(data['message'],'Not Found')
 
     def test_get_error_as_no_quiz_questions_left(self):
-        res = self.client().get('categories/1/questions')
-        data = json.loads(res.data)
+        questions = Question.query.filter_by(category="1").all()
+        ids = [question.id for question in questions]
 
-        ids = [question['id'] for question in data['questions']]
-        
         params = {
             'previous_questions':ids,
             'quiz_category': {
-                'type': "science", 'id': 1
+                'type': "science", 'id': "1"
             }
         }
         res = self.client().post('quizzes', json = params)
@@ -189,7 +187,7 @@ class TriviaTestCase(unittest.TestCase):
             "question":"I would have a question",
             "answer":"test",
             "difficulty":1,
-            "category":1
+            "category":"1"
             }
 
         res = self.client().post('questions/create', json = params)
@@ -209,7 +207,7 @@ class TriviaTestCase(unittest.TestCase):
             "question":"I would have a question",
             "answer":"test",
             "difficulty":1,
-            "category":9999
+            "category":"9999"
             }
         res = self.client().post('questions/create', json = params)
         data = json.loads(res.data)
@@ -224,7 +222,7 @@ class TriviaTestCase(unittest.TestCase):
             "question":"I would have a question",
             "answer":"test",
             "difficulty":0,
-            "category":1
+            "category":"1"
             }
         res = self.client().post('questions/create', json = params)
         data = json.loads(res.data)
@@ -238,7 +236,7 @@ class TriviaTestCase(unittest.TestCase):
             "question":"I would have a question",
             "answer":"test",
             "difficulty":6,
-            "category":1
+            "category":"1"
             }
         res = self.client().post('questions/create', json = params)
         data = json.loads(res.data)
@@ -247,26 +245,26 @@ class TriviaTestCase(unittest.TestCase):
         self.assertEqual(data['success'], False)
         self.assertEqual(data['message'],'Difficulty needs to be an Integer of 1 to 5')
 
-    def test_post_question_category_not_integer(self):
+    def test_post_question_category_not_string(self):
         params = {
             "question":"I would have a question",
             "answer":"test",
             "difficulty":6,
-            "category":"1"
+            "category":1
             }
         res = self.client().post('questions/create', json = params)
         data = json.loads(res.data)
 
         self.assertEqual(res.status_code, 400)
         self.assertEqual(data['success'], False)
-        self.assertEqual(data['message'],'Category needs to be an Integer')
+        self.assertEqual(data['message'],'Category needs to be a String')
 
     def test_post_question_difficulty_not_integer(self):
         params = {
             "question":"I would have a question",
             "answer":"test",
             "difficulty":"6",
-            "category":1
+            "category":"1"
             }
         res = self.client().post('questions/create', json = params)
         data = json.loads(res.data)
@@ -279,8 +277,8 @@ class TriviaTestCase(unittest.TestCase):
         params = {
             "question":"I would",
             "answer":"test",
-            "difficulty":"6",
-            "category":1
+            "difficulty":6,
+            "category":"1"
             }
         res = self.client().post('questions/create', json = params)
         data = json.loads(res.data)
@@ -293,8 +291,8 @@ class TriviaTestCase(unittest.TestCase):
         params = {
             "question":"I would have a question",
             "answer":"",
-            "difficulty":"6",
-            "category":1
+            "difficulty":6,
+            "category":"1"
             }
         res = self.client().post('questions/create', json = params)
         data = json.loads(res.data)
