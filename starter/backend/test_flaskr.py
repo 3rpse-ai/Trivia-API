@@ -187,7 +187,7 @@ class TriviaTestCase(unittest.TestCase):
             "question":"I would have a question",
             "answer":"test",
             "difficulty":1,
-            "category":"1"
+            "category":1
             }
 
         res = self.client().post('questions/create', json = params)
@@ -207,7 +207,7 @@ class TriviaTestCase(unittest.TestCase):
             "question":"I would have a question",
             "answer":"test",
             "difficulty":1,
-            "category":"9999"
+            "category":9999
             }
         res = self.client().post('questions/create', json = params)
         data = json.loads(res.data)
@@ -222,7 +222,7 @@ class TriviaTestCase(unittest.TestCase):
             "question":"I would have a question",
             "answer":"test",
             "difficulty":0,
-            "category":"1"
+            "category":1
             }
         res = self.client().post('questions/create', json = params)
         data = json.loads(res.data)
@@ -236,7 +236,7 @@ class TriviaTestCase(unittest.TestCase):
             "question":"I would have a question",
             "answer":"test",
             "difficulty":6,
-            "category":"1"
+            "category":1
             }
         res = self.client().post('questions/create', json = params)
         data = json.loads(res.data)
@@ -245,26 +245,26 @@ class TriviaTestCase(unittest.TestCase):
         self.assertEqual(data['success'], False)
         self.assertEqual(data['message'],'Difficulty needs to be an Integer of 1 to 5')
 
-    def test_post_question_category_not_string(self):
+    def test_post_question_category_not_integer(self):
         params = {
             "question":"I would have a question",
             "answer":"test",
-            "difficulty":6,
-            "category":1
+            "difficulty":5,
+            "category":"a"
             }
         res = self.client().post('questions/create', json = params)
         data = json.loads(res.data)
 
         self.assertEqual(res.status_code, 400)
         self.assertEqual(data['success'], False)
-        self.assertEqual(data['message'],'Category needs to be a String')
+        self.assertEqual(data['message'],'Category needs to be an Integer')
 
     def test_post_question_difficulty_not_integer(self):
         params = {
             "question":"I would have a question",
             "answer":"test",
-            "difficulty":"6",
-            "category":"1"
+            "difficulty":"c",
+            "category":1
             }
         res = self.client().post('questions/create', json = params)
         data = json.loads(res.data)
@@ -278,7 +278,7 @@ class TriviaTestCase(unittest.TestCase):
             "question":"I would",
             "answer":"test",
             "difficulty":6,
-            "category":"1"
+            "category":1
             }
         res = self.client().post('questions/create', json = params)
         data = json.loads(res.data)
@@ -292,7 +292,7 @@ class TriviaTestCase(unittest.TestCase):
             "question":"I would have a question",
             "answer":"",
             "difficulty":6,
-            "category":"1"
+            "category":1
             }
         res = self.client().post('questions/create', json = params)
         data = json.loads(res.data)

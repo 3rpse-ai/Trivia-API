@@ -151,17 +151,24 @@ def create_app(test_config=None):
     if len(answer) < 1:
       abort(400, {'message':'Answer needs to be at least one character'})
 
-    if not isinstance(category, str):
-      abort(400, {'message':'Category needs to be a String'})
+    try:
+      if not isinstance(int(category), int):
+        abort(400, {'message':'Category needs to be an Integer'})
+    except:
+      abort(400, {'message':'Category needs to be an Integer'})
 
-    if not isinstance(difficulty, int):
+    try:
+      if not isinstance(int(difficulty), int):
+        abort(400, {'message':'Difficulty needs to be an Integer'})
+
+    except:
       abort(400, {'message':'Difficulty needs to be an Integer'})
 
     category_full = Category.query.get(category)
     if category_full is None:
       abort(400, {'message':'Category does not exist'})
 
-    if (difficulty < 1 or difficulty > 5):
+    if (int(difficulty) < 1 or int(difficulty) > 5):
       abort(400, {'message':'Difficulty needs to be an Integer of 1 to 5'})
     
     new_question = Question(question,answer,category,difficulty)
@@ -249,7 +256,11 @@ def create_app(test_config=None):
       questions = [question for question in questions if question.id !=prev_question]
 
     if len(questions) is 0:
-      abort(422, {'message':'No more questions to display'})
+      #abort(422, {'message':'No more questions to display'})
+      return jsonify({
+        'success': True,
+        'question': None
+        })
 
     random_question = random.choice(questions)
 
