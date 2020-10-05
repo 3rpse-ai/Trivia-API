@@ -28,20 +28,34 @@ def create_app(test_config=None):
   @TODO: Set up CORS. Allow '*' for origins. Delete the sample route after completing the TODOs
   '''
   cors = CORS(app, origins=['*'])
-  
-  '''
-  @TODO: Use the after_request decorator to set Access-Control-Allow
-  '''
+
   @app.after_request
   def after_request(response):
     response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization,true')
     response.headers.add('Access-Control-Allow-Methods', 'GET,PATCH,POST,DELETE,OPTIONS')
     return response
+
+  
   '''
   @TODO: 
   Create an endpoint to handle GET requests 
   for all available categories.
   '''
+
+  @app.route('/categories', methods=['GET',])
+  def get_categories():
+
+    selection = Category.query.all()
+
+    categories = [category.format() for category in selection]
+
+    if len(categories) == 0:
+      abort(404)
+  
+    return jsonify({
+            'success': True,
+            'categories': {category.id: category.type for category in selection}
+        })
   
 
   '''
@@ -121,6 +135,43 @@ def create_app(test_config=None):
   of the questions list in the "List" tab.  
   '''
 
+  @app.route('/questions/create', methods=['POST'])
+  def create_question():
+
+  
+    content = request.json
+    question = content['question']
+    answer = content['answer']
+    category = content['category']
+    difficulty = content['difficulty']
+
+    if len(question) < 10:
+      abort(400, {'message':'Question needs to be at least 10 characters long'})
+
+    if len(answer) < 1:
+      abort(400, {'message':'Answer needs to be at least one character'})
+
+    if not isinstance(category, str):
+      abort(400, {'message':'Category needs to be a String'})
+
+    if not isinstance(difficulty, int):
+      abort(400, {'message':'Difficulty needs to be an Integer'})
+
+    category_full = Category.query.get(category)
+    if category_full is None:
+      abort(400, {'message':'Category does not exist'})
+
+    if (difficulty < 1 or difficulty > 5):
+      abort(400, {'message':'Difficulty needs to be an Integer of 1 to 5'})
+    
+    new_question = Question(question,answer,category,difficulty)
+    new_question.insert()
+
+    return jsonify({
+      'success': True,
+      'question': new_question.format()
+    })
+
 
   '''
   @TODO: 
@@ -133,6 +184,8 @@ def create_app(test_config=None):
   Try using the word "title" to start. 
   '''
 
+  #done & combined with get endpoint
+
   '''
   @TODO: 
   Create a GET endpoint to get questions based on category. 
@@ -141,6 +194,35 @@ def create_app(test_config=None):
   categories in the left column will cause only questions of that 
   category to be shown. 
   '''
+
+  @app.route('/categories/<category_id>/questions', methods=['GET'])
+  def get_questions_by_category(category_id):
+
+    if request.method == 'GET':
+      selection = Question.query.filter_by(category=category_id).all()
+      
+    if request.method == 'POST':
+      content = request.json
+      search_term = content['searchTerm']
+      print(format(search_term))
+      selection = Question.query.filter(Question.question.ilike('%' + search_term + '%')).all()
+    
+    questions = paginate_questions(request, selection)
+    categories = Category.query.all()
+
+    if len(questions) == 0:
+      abort(404)
+
+
+    
+  
+    return jsonify({
+      'success': True,
+      'questions': questions,
+      'categories': {category.id: category.type for category in categories},
+      'total_questions': len(selection),
+      'current_category': None,
+    })
 
 
   '''
@@ -154,6 +236,35 @@ def create_app(test_config=None):
   one question at a time is displayed, the user is allowed to answer
   and shown whether they were correct or not. 
   '''
+
+  @app.route('/quizzes', methods=['POST'])
+  def get_random_quiz_question():
+
+    content = request.json
+    category = content['quiz_category']
+    previous_questions = content['previous_questions']
+
+    if category['id'] is 0:
+      questions = Question.query.all()
+    else:
+      questions = Question.query.filter_by(category=category['id']).all()
+
+    if len(questions) is 0:
+      abort(404)
+
+    for prev_question in previous_questions:
+      questions = [question for question in questions if question.id !=prev_question]
+
+    if len(questions) is 0:
+      abort(422, {'message':'No more questions to display'})
+
+    random_question = random.choice(questions)
+
+    return jsonify({
+      'success': True,
+      'question': random_question.format()
+    })
+
 
   '''
   @TODO: 
@@ -175,6 +286,14 @@ def create_app(test_config=None):
       'error' : 400,
       'message' : error.description['message']
     }), 400
+
+  @app.errorhandler(422)
+  def bad_request(error):
+    return jsonify({
+      'success' : False,
+      'error' : 422,
+      'message' : error.description['message']
+    }), 422
   
   return app
 

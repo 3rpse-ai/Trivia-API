@@ -52,42 +52,198 @@ Setting the `FLASK_ENV` variable to `development` will detect file changes and r
 
 Setting the `FLASK_APP` variable to `flaskr` directs flask to use the `flaskr` directory and the `__init__.py` file to find the application. 
 
-## Tasks
+## Endpoints
 
-One note before you delve into your tasks: for each endpoint you are expected to define the endpoint and response data. The frontend will be a plentiful resource because it is set up to expect certain endpoints and response data formats already. You should feel free to specify endpoints in your own way; if you do so, make sure to update the frontend or you will get some unexpected behavior. 
+The Trivia-API Backend provides a couple of Endpoints for providing the full gaming experience. Please find each endpoint documented below:
 
-1. Use Flask-CORS to enable cross-domain requests and set response headers. 
-2. Create an endpoint to handle GET requests for questions, including pagination (every 10 questions). This endpoint should return a list of questions, number of total questions, current category, categories. 
-3. Create an endpoint to handle GET requests for all available categories. 
-4. Create an endpoint to DELETE question using a question ID. 
-5. Create an endpoint to POST a new question, which will require the question and answer text, category, and difficulty score. 
-6. Create a POST endpoint to get questions based on category. 
-7. Create a POST endpoint to get questions based on a search term. It should return any questions for whom the search term is a substring of the question. 
-8. Create a POST endpoint to get questions to play the quiz. This endpoint should take category and previous question parameters and return a random questions within the given category, if provided, and that is not one of the previous questions. 
-9. Create error handlers for all expected errors including 400, 404, 422 and 500. 
 
-REVIEW_COMMENT
-```
-This README is missing documentation of your endpoints. Below is an example for your endpoint to get all categories. Please use it as a reference for creating your documentation and resubmit your code. 
-
-Endpoints
-GET '/categories'
-GET ...
-POST ...
-DELETE ...
 
 GET '/categories'
 - Fetches a dictionary of categories in which the keys are the ids and the value is the corresponding string of the category
 - Request Arguments: None
 - Returns: An object with a single key, categories, that contains a object of id: category_string key:value pairs. 
+```
 {'1' : "Science",
 '2' : "Art",
 '3' : "Geography",
 '4' : "History",
 '5' : "Entertainment",
 '6' : "Sports"}
-
 ```
+
+GET '/questions'
+- Fetches all questions, paginated, max 10 questions per page. Takes current page number as argument.
+- Request Arguments: page(int)
+- Returns: An object including all categories, the current category (null in this case), all questions, the success status, and the number of total_questions. Categories are provided with the id as key and string as value. Questions are provided as a list of dictionaries each providing values for answer,category,difficulty,id, and question.
+```
+{
+  "categories": {
+    "1": "Science", 
+    "2": "Art", 
+    "3": "Geography", 
+    "4": "History", 
+    "5": "Entertainment", 
+    "6": "Sports"
+  }, 
+  "current_category": null, 
+  "questions": [
+    {
+      "answer": "Muhammad Ali", 
+      "category": 4, 
+      "difficulty": 1, 
+      "id": 9, 
+      "question": "What boxer's original name is Cassius Clay?"
+    }, 
+    {
+      "answer": "Apollo 13", 
+      "category": 5, 
+      "difficulty": 4, 
+      "id": 2, 
+      "question": "What movie earned Tom Hanks his third straight Oscar nomination, in 1996?"
+    }
+  ], 
+  "success": true, 
+  "total_questions": 2
+}
+```
+
+POST '/questions'
+- Fetches all questions fullfilling a search term, paginated, max 10 questions per page. Takes current page number as argument. The search is run on the question string, ignores case and is independent of where it is found in the string.
+- Request Arguments: page(int)
+- Request Body:
+```
+{
+    "searchTerm": "Cassius"
+}
+```
+- Returns: An object including all categories, the current category (null in this case), all questions, the success status, and the number of total_questions. Categories are provided with the id as key and string as value. Questions are provided as a list of dictionaries each providing values for answer,category,difficulty,id, and question.
+```
+{
+  "categories": {
+    "1": "Science", 
+    "2": "Art", 
+    "3": "Geography", 
+    "4": "History", 
+    "5": "Entertainment", 
+    "6": "Sports"
+  }, 
+  "current_category": null, 
+  "questions": [
+    {
+      "answer": "Muhammad Ali", 
+      "category": 4, 
+      "difficulty": 1, 
+      "id": 9, 
+      "question": "What boxer's original name is Cassius Clay?"
+    }
+  ], 
+  "success": true, 
+  "total_questions": 1
+}
+```
+
+DELETE '/questions/<question_id>'
+- Deletes a question, as defined by a question_id
+- Request Arguments: question_id(int)
+- Returns: The success of the operation, provided as value of a dict.
+```
+{
+  "success": true
+}
+```
+
+POST '/questions/create'
+- Creates a new question as provided in the json request body. Every provided category id must be of type string & point to an existing category. The difficulty must be an integer between 1 to 5. The question must have at least 10, and the answer at least one character(s).
+- Request Arguments: None
+- Request Body:
+```
+{
+    "question": "Is this a new question?",
+    "answer": "This is a new question",
+    "difficulty": 1,
+    "category": "4"
+}
+```
+- Returns: a dictionary containing the posted question as well as a success status.
+```
+{
+  "question": {
+    "answer": "This is a new question", 
+    "category": 4, 
+    "difficulty": 1, 
+    "id": 35, 
+    "question": "Is this a new question?"
+  }, 
+  "success": true
+}
+```
+
+GET '/categories/<category_id>/questions'
+- Fetches all questions, paginated, max 10 questions per page. Takes category_id & current page number as argument.
+- Request Arguments: category_id(str), page(int)
+- Returns: A dict including all categories, the current category (as specified in the argument), all related questions, the success status, and the number of total_questions. Categories are provided with the id as key and string as value. Questions are provided as a list of dictionaries each providing values for answer,category,difficulty,id, and question.
+```
+{
+  "categories": {
+    "1": "Science", 
+    "2": "Art", 
+    "3": "Geography", 
+    "4": "History", 
+    "5": "Entertainment", 
+    "6": "Sports"
+  }, 
+  "current_category": 1, 
+  "questions": [
+    {
+      "answer": "The Liver", 
+      "category": 1, 
+      "difficulty": 4, 
+      "id": 20, 
+      "question": "What is the heaviest organ in the human body?"
+    }, 
+    {
+      "answer": "Alexander Fleming", 
+      "category": 1, 
+      "difficulty": 3, 
+      "id": 21, 
+      "question": "Who discovered penicillin?"
+    }
+  ], 
+  "success": true, 
+  "total_questions": 2
+}
+```
+
+POST 'quizzes'
+- Fetches a random question of either all question or a given category. In selecting a random question, previously displayed questions can be excluded by providing question ids as an array. If no particular category shall be chosen, provide '0' for category id.
+- Request Arguments: None
+- Request Body:
+```
+{
+    "previous_questions": [21],
+    "quiz_category": {
+        "type": "Science",
+        "id": "1"
+    }
+}
+```
+
+- Returns: A random question as specified in the request body. In case no more questions are available for display given by the previous_questions array, a 422 is thrown.
+```
+{
+  "question": {
+    "answer": "test", 
+    "category": 1, 
+    "difficulty": 1, 
+    "id": 33, 
+    "question": "Is this a question"
+  }, 
+  "success": true
+}
+```
+
+
+
 
 
 ## Testing
